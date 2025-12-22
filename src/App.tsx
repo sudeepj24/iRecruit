@@ -16,6 +16,7 @@ import Jobs from "./pages/Jobs";
 import JobDashboard from "./pages/JobDashboard";
 import FinalShortlist from "./pages/FinalShortlist";
 import Candidates from "./pages/Candidates";
+import CalendarSync from "./pages/CalendarSync";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -61,6 +62,11 @@ const App = () => (
               <Route path="/candidates" element={
                 <ProtectedRoute>
                   <Candidates />
+                </ProtectedRoute>
+              } />
+              <Route path="/calendar" element={
+                <ProtectedRoute>
+                  <CalendarSync />
                 </ProtectedRoute>
               } />
               <Route path="/settings" element={

@@ -11,7 +11,8 @@ import {
   LogOut,
   Bot,
   Menu,
-  X
+  X,
+  Calendar
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -25,6 +26,7 @@ const navItems = [
   { icon: Plus, label: 'Create Job', path: '/create-job' },
   { icon: Briefcase, label: 'Jobs', path: '/jobs' },
   { icon: Users, label: 'Candidate Pool', path: '/candidates' },
+  { icon: Calendar, label: 'Calendar Sync', path: '/calendar' },
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 

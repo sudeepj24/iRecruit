@@ -11,12 +11,14 @@ import {
   XCircle,
   CheckCircle2,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Calendar
 } from 'lucide-react';
 
 interface CandidateCardProps {
   candidate: Candidate;
   onViewReport: () => void;
+  onScheduleInterview?: () => void;
   compact?: boolean;
 }
 
@@ -36,7 +38,7 @@ const statusConfig = {
   rejected: { label: 'Rejected', color: 'bg-destructive/10 text-destructive', icon: XCircle },
 };
 
-const CandidateCard = ({ candidate, onViewReport, compact = false }: CandidateCardProps) => {
+const CandidateCard = ({ candidate, onViewReport, onScheduleInterview, compact = false }: CandidateCardProps) => {
   const SourceIcon = sourceIcons[candidate.source] || Globe;
   const statusInfo = statusConfig[candidate.status];
   const StatusIcon = statusInfo.icon;
@@ -153,10 +155,18 @@ const CandidateCard = ({ candidate, onViewReport, compact = false }: CandidateCa
           {statusInfo.label}
         </Badge>
         
-        <Button variant="default" size="sm" onClick={onViewReport}>
-          <FileText className="w-4 h-4 mr-1" />
-          View AI Report
-        </Button>
+        <div className="flex gap-2">
+          {candidate.status === 'shortlisted' && onScheduleInterview && (
+            <Button variant="outline" size="sm" onClick={onScheduleInterview}>
+              <Calendar className="w-4 h-4 mr-1" />
+              Schedule
+            </Button>
+          )}
+          <Button variant="default" size="sm" onClick={onViewReport}>
+            <FileText className="w-4 h-4 mr-1" />
+            View Report
+          </Button>
+        </div>
       </div>
 
       {/* Rejection Reason */}

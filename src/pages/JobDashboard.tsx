@@ -6,6 +6,7 @@ import CandidateReportModal from '@/components/candidates/CandidateReportModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useJobs, Candidate, CandidateStatus } from '@/contexts/JobContext';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { 
   ArrowLeft, 
@@ -14,7 +15,9 @@ import {
   Clock, 
   Zap,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Calendar,
+  Send
 } from 'lucide-react';
 
 const pipelineColumns: { status: CandidateStatus; label: string; color: string }[] = [
@@ -30,6 +33,7 @@ const JobDashboard = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getJob, updateCandidate, settings } = useJobs();
+  const { toast } = useToast();
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [isSimulating, setIsSimulating] = useState(true);
   const [simulationPhase, setSimulationPhase] = useState(0);
@@ -142,6 +146,8 @@ const JobDashboard = () => {
     .filter(c => c.status === 'completed')
     .sort((a, b) => b.aiScore - a.aiScore);
 
+  const shortlistedCandidates = job.candidates.filter(c => c.status === 'shortlisted');
+
   const isShortlistReady = completedCandidates.length >= job.targetShortlist;
 
   return (
@@ -217,7 +223,7 @@ const JobDashboard = () => {
         </div>
 
         {/* Pipeline */}
-        <div className="bg-card rounded-2xl border border-border/50 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-border/50 overflow-hidden mb-8">
           <div className="p-6 border-b border-border">
             <h2 className="text-lg font-display font-semibold">Candidate Pipeline</h2>
           </div>
@@ -265,6 +271,66 @@ const JobDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Schedule Interviews Card */}
+        {shortlistedCandidates.length > 0 && (
+          <div className="bg-gradient-subtle rounded-2xl p-6 border border-primary/20 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-display font-semibold flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  Schedule Interviews
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  Send calendar invites to {shortlistedCandidates.length} shortlisted candidates
+                </p>
+              </div>
+              <Badge variant="secondary" className="bg-primary/10 text-primary">
+                {shortlistedCandidates.length} candidates
+              </Badge>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+              {shortlistedCandidates.slice(0, 6).map((candidate) => (
+                <div key={candidate.id} className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border/50">
+                  <div className="w-8 h-8 rounded-full bg-gradient-hero flex items-center justify-center text-primary-foreground text-xs font-semibold">
+                    {candidate.name[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{candidate.name}</p>
+                    <p className="text-xs text-muted-foreground">Score: {candidate.aiScore}</p>
+                  </div>
+                </div>
+              ))}
+              {shortlistedCandidates.length > 6 && (
+                <div className="flex items-center justify-center p-3 bg-muted rounded-lg border border-border/50">
+                  <p className="text-sm text-muted-foreground">+{shortlistedCandidates.length - 6} more</p>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-primary/5 rounded-xl p-4 mb-4 border border-primary/20">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">Auto-sync enabled:</strong> Available time slots will be synced from your connected calendar. 
+                Candidates will receive invites with available slots to choose from.
+              </p>
+            </div>
+
+            <Button 
+              className="w-full" 
+              size="lg"
+              onClick={() => {
+                toast({
+                  title: 'Interview Invites Sent!',
+                  description: `Calendar invites sent to ${shortlistedCandidates.length} shortlisted candidates`,
+                });
+              }}
+            >
+              <Send className="w-5 h-5 mr-2" />
+              Send Interview Invites to All
+            </Button>
+          </div>
+        )}
 
         {/* Report Modal */}
         <CandidateReportModal
