@@ -18,7 +18,7 @@ const CreateJob = () => {
     title: '',
     experienceRange: '',
     skills: '',
-    hiresRequired: 1,
+    hiresRequired: '',
     startDate: '',
     endDate: '',
     testInstructions: '',
@@ -35,7 +35,7 @@ const CreateJob = () => {
       title: formData.title,
       experienceRange: formData.experienceRange,
       skills: formData.skills.split(',').map(s => s.trim()).filter(Boolean),
-      hiresRequired: formData.hiresRequired,
+      hiresRequired: Number(formData.hiresRequired) || 1,
       startDate: formData.startDate,
       endDate: formData.endDate,
       testInstructions: formData.testInstructions,
@@ -107,7 +107,7 @@ const CreateJob = () => {
                     type="number"
                     min="1"
                     value={formData.hiresRequired}
-                    onChange={(e) => setFormData(prev => ({ ...prev, hiresRequired: parseInt(e.target.value) || 1 }))}
+                    onChange={(e) => setFormData(prev => ({ ...prev, hiresRequired: e.target.value }))}
                     className="h-12"
                     required
                   />
@@ -215,8 +215,8 @@ const CreateJob = () => {
             </h3>
             <p className="text-muted-foreground text-sm">
               The AI will source candidates and deliver a shortlist of{' '}
-              <span className="font-semibold text-primary">{formData.hiresRequired * 3} candidates</span>{' '}
-              (3× of {formData.hiresRequired} hires required) with detailed evaluation reports.
+              <span className="font-semibold text-primary">{(Number(formData.hiresRequired) || 1) * 3} candidates</span>{' '}
+              (3× of {Number(formData.hiresRequired) || 1} hires required) with detailed evaluation reports.
             </p>
           </div>
 
