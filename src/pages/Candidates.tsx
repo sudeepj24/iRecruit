@@ -14,11 +14,11 @@ import {
 
 const statusFilters: { value: CandidateStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'All' },
-  { value: 'sourced', label: 'Sourced' },
   { value: 'shortlisted', label: 'Shortlisted' },
   { value: 'test_sent', label: 'Test Sent' },
   { value: 'interview_scheduled', label: 'Interview' },
   { value: 'completed', label: 'Completed' },
+  { value: 'sourced', label: 'Sourced' },
   { value: 'rejected', label: 'Rejected' },
 ];
 
@@ -26,7 +26,7 @@ const Candidates = () => {
   const { jobs } = useJobs();
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<CandidateStatus | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<CandidateStatus | 'all'>('shortlisted');
 
   // Aggregate all candidates from all jobs
   const allCandidates = jobs.flatMap(job => 

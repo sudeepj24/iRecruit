@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import AIProcessModal from '@/components/AIProcessModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +14,8 @@ const CreateJob = () => {
   const { createJob } = useJobs();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [showProcessModal, setShowProcessModal] = useState(false);
+  const [createdJob, setCreatedJob] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -42,13 +45,18 @@ const CreateJob = () => {
       interviewInstructions: formData.interviewInstructions,
     });
 
-    toast({
-      title: 'AI Hiring Process Started!',
-      description: `Target: ${job.targetShortlist} candidates (3× of ${job.hiresRequired} hires)`,
-    });
-
-    navigate(`/job/${job.id}`);
+    setCreatedJob(job);
     setIsLoading(false);
+    setShowProcessModal(true);
+  };
+
+  const handleProcessComplete = () => {
+    setShowProcessModal(false);
+    toast({
+      title: 'AI Hiring Process Complete!',
+      description: `${createdJob.targetShortlist} candidates ready for review`,
+    });
+    navigate(`/job/${createdJob.id}`);
   };
 
   return (
@@ -241,6 +249,14 @@ const CreateJob = () => {
             )}
           </Button>
         </form>
+
+        {/* AI Process Modal */}
+        <AIProcessModal
+          isOpen={showProcessModal}
+          onComplete={handleProcessComplete}
+          jobTitle={createdJob?.title || ''}
+          targetCandidates={createdJob?.targetShortlist || 0}
+        />
       </div>
     </DashboardLayout>
   );

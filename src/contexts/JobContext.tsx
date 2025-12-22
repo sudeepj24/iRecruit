@@ -79,12 +79,28 @@ const generateCandidate = (index: number, jobSkills: string[]): Candidate => {
   const source = sources[Math.floor(Math.random() * sources.length)];
   const resumeMatchScore = Math.floor(Math.random() * 40) + 60;
   
-  return {
+  // Distribute candidates across different statuses for demo
+  const statuses: CandidateStatus[] = ['sourced', 'shortlisted', 'test_sent', 'interview_scheduled', 'completed', 'rejected'];
+  const statusWeights = [0.3, 0.2, 0.15, 0.15, 0.1, 0.1]; // Distribution percentages
+  
+  let status: CandidateStatus = 'sourced';
+  const rand = Math.random();
+  let cumulative = 0;
+  
+  for (let i = 0; i < statusWeights.length; i++) {
+    cumulative += statusWeights[i];
+    if (rand <= cumulative) {
+      status = statuses[i];
+      break;
+    }
+  }
+  
+  const candidate: Candidate = {
     id: `cand-${Date.now()}-${index}`,
     name,
     email: `${name.toLowerCase().replace(' ', '.')}@email.com`,
     source,
-    status: 'sourced',
+    status,
     aiScore: resumeMatchScore,
     resumeMatchScore,
     college: colleges[Math.floor(Math.random() * colleges.length)],
@@ -92,6 +108,27 @@ const generateCandidate = (index: number, jobSkills: string[]): Candidate => {
     experience: Math.floor(Math.random() * 8) + 1,
     skills: jobSkills.slice(0, Math.floor(Math.random() * 3) + 2),
   };
+  
+  // Add additional fields based on status
+  if (status === 'test_sent' || status === 'interview_scheduled' || status === 'completed') {
+    candidate.testScore = Math.floor(Math.random() * 30) + 70;
+  }
+  
+  if (status === 'interview_scheduled' || status === 'completed') {
+    candidate.interviewSlot = `${Math.floor(Math.random() * 12) + 1}:00 ${Math.random() > 0.5 ? 'AM' : 'PM'}`;
+  }
+  
+  if (status === 'completed') {
+    candidate.interviewScore = Math.floor(Math.random() * 30) + 70;
+    candidate.aiRecommendation = resumeMatchScore > 80 ? 'Strong Fit' : resumeMatchScore > 65 ? 'Medium Fit' : 'Weak Fit';
+  }
+  
+  if (status === 'rejected') {
+    const rejectionReasons: RejectionReason[] = ['Denied college', 'Denied company', 'Low AIScore', 'Not interested', 'No response'];
+    candidate.rejectionReason = rejectionReasons[Math.floor(Math.random() * rejectionReasons.length)];
+  }
+  
+  return candidate;
 };
 
 export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
